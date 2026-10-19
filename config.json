@@ -1,0 +1,87 @@
+{
+  "data_source": {
+    "base_url": "https://api.gateio.ws/api/v4",
+    "settle": "usdt",
+    "contract_types_exclude": [
+      "stocks",
+      "indices",
+      "metals",
+      "forex",
+      "commodities"
+    ],
+    "exclude_pre_market": true,
+    "min_quote_volume_24h": 0,
+    "candle_limit": 400
+  },
+  "indicators": {
+    "macd": {
+      "fast": 12,
+      "slow": 26,
+      "signal": 9
+    },
+    "ema": [
+      7,
+      25,
+      99
+    ]
+  },
+  "timeframes": {
+    "large": [
+      "1d",
+      "4h"
+    ],
+    "mid": "1h",
+    "small": "15m"
+  },
+  "ema_requirements": {
+    "4h": {
+      "ema": 25,
+      "retest_bars": 3
+    },
+    "1h": {
+      "ema": 25,
+      "retest_bars": 3
+    },
+    "15m": {
+      "ema": 25,
+      "retest_bars": 3
+    }
+  },
+  "push": {
+    "wecom_webhook": "",
+    "mode": "signal_only",
+    "only_tiers": [
+      "S",
+      "A"
+    ],
+    "min_quote_volume_24h": 20000000,
+    "top_n": 5,
+    "cooldown_hours": 12,
+    "max_bytes": 3800,
+    "repush_on_upgrade": true
+  },
+  "runtime": {
+    "workers": 16,
+    "rate_per_sec": 25,
+    "timeout": 20,
+    "retries": 3
+  },
+  "account": {
+    "equity_usdt": 40,
+    "risk_pct": 25,
+    "max_leverage": 20,
+    "fee_rate": 0.0005,
+    "mmr": 0.01,
+    "min_liq_buffer_pct": 1.0,
+    "stop_buffer_pct": 0.2,
+    "stop_lookback_bars": 8,
+    "max_margin_pct": 80,
+    "slippage_pct": 0.08
+  },
+  "discipline": {
+    "max_cost_pct_of_r": 25,
+    "min_stop_pct": 0.8,
+    "max_signals_per_day": 2,
+    "daily_stop_loss_pct": 20
+  }
+}
