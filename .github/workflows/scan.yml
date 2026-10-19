@@ -1,0 +1,53 @@
+name: perp-resonance-scan
+
+# 每 15 分钟扫描一次 USDT 永续全市场，命中信号才推企业微信。
+# GitHub 的 schedule 用 UTC，且排队可能延迟几分钟，属于正常现象。
+on:
+  schedule:
+    - cron: "4,19,34,49 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+# 同一时间只跑一个实例，避免上一轮没跑完就叠加
+concurrency:
+  group: perp-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 去重状态（12 小时冷却、当日已推条数、当日亏损）必须跨轮保留
+      - name: Restore push state
+        uses: actions/cache@v4
+        with:
+          path: state
+          key: state-${{ github.run_id }}
+          restore-keys: |
+            state-
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check secret
+        env:
+          WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
+        run: |
+          if [ -z "$WECOM_WEBHOOK" ]; then
+            echo "::error::缺少仓库 Secret: WECOM_WEBHOOK。路径：Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+          echo "webhook secret OK"
+
+      - name: Scan and push
+        env:
+          WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
+        run: python scanner.py
